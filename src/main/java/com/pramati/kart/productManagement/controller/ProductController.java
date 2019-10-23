@@ -9,13 +9,15 @@ import com.pramati.kart.productManagement.entity.Product;
 import com.pramati.kart.productManagement.repository.ProductRepository;
 import com.pramati.kart.productManagement.utility.BeanUtility;
 import com.pramati.kart.productManagement.utility.Response;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
-
+@Api(value="Product Management System", description="Operations pertaining to product in Product Management System")
 @RestController
 public class ProductController {
     @Autowired
@@ -24,6 +26,7 @@ public class ProductController {
     @Autowired
     private BeanUtility beanUtility;
 
+    @ApiOperation(value = "View a list of available product", response = List.class)
     @GetMapping("/product/{id}")
     public Product getProductByID(@PathVariable("id") long id) {
         return repository.findById(id).orElse(null);
@@ -34,13 +37,14 @@ public class ProductController {
 //    public List<Product> getAllProducts() {
 //        return repository.findAll();
 //    }
-
+    @ApiOperation(value = "Add a product")
     @PostMapping("/product")
     public Response createProduct(@RequestBody Product product) {
         repository.saveAndFlush(product);
         return new Response("Product Created Successfully");
     }
 
+    @ApiOperation(value = "Udpate complete product details")
     @PutMapping("/product/{id}")
     public Product updateEmployee(@PathVariable("id") Long id,@RequestBody Product productdata) {
         Product product=repository.findById(id).orElse(null);
@@ -50,6 +54,7 @@ public class ProductController {
         return  repository.findById(id).orElse(null);
     }
 
+    @ApiOperation(value = "Delete a product ")
     @DeleteMapping("/product/{id}")
     public Response deleteProduct(@PathVariable("id") Long id){
         repository.deleteById(id);
@@ -57,15 +62,19 @@ public class ProductController {
 
     }
 
-    @GetMapping("/product")
+    @ApiOperation(value = "Search a product ")
+    @GetMapping("/searchproduct")
     public List<Product> searchProduct(@RequestParam("search") String search){
        if(search==null)  return repository.findAll();
            return repository.findProduct(search);
-
-
     }
 
-
+    @ApiOperation(value = "Get all products ")
+    @GetMapping("/product")
+    public List<Product> getAllProduct(){
+          return repository.findAll();
+    }
+    @ApiOperation(value = "Update a product ")
     @PatchMapping("/product/{id}")
     public Product patchProduct(@PathVariable("id") Long id, @RequestBody HashMap<String, Object> fields) {
         Product product=repository.findById(id).orElse(null);
